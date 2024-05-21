@@ -13,7 +13,6 @@ sessions = {}
 # Fonction pour comparer les caractéristiques du personnage choisi par l'utilisateur avec le personnage cible
 def compare_characters(user_character, target_character, characters_df):
     comparison = {}
-    print(target_character)
     for column in characters_df.columns[COMPARE_START_COL:]:
         is_numeric = True
         try:
@@ -59,8 +58,6 @@ async def play_game(ctx, user_id, characters_df):
     turns = 0
 
     sessions[user_id] = [target_character_index, turns]
-
-    print(sessions)
 
     await ctx.respond(msg)
 
