@@ -83,6 +83,7 @@ async def handle_answer(ctx, user_id, name, characters_df, autocomplete_names):
 
         turn_str = "turns" if turns > 1 else "turn"
         msg += f"```\n\nCongratulations! You guessed **{target_character[NAME_COL]}** - **{target_character[ROMAJI_COL]}** in **{turns}** {turn_str}."
+        sessions.pop(user_id)
     else:
         # Trouver le personnage choisi par l'utilisateur dans le DataFrame
         user_character = characters_df[characters_df[ROMAJI_COL] == name].iloc[0]
