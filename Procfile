@@ -1,1 +1,1 @@
-worker: python main.py
+worker: cp /home/piku/umadle_credentials.json credentials.json && python main.py
