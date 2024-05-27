@@ -1,12 +1,15 @@
 import pandas as pd
 import random
+import discord
 from utils import clean_string, convert_birthday
 
 NAME_COL = 'Name'
 ROMAJI_COL = 'Romaji'
+IMAGE_COL = 'Image URL'
+TITLE_COL = 'Title'
 BIRTHDAY_COL = 'Birthday'
 RELEASE_COL = 'Release date'
-COMPARE_START_COL = 3
+COMPARE_START_COL = 4
 SESSION_CHARINDEX = 0
 SESSION_TURNINDEX = 1
 
@@ -17,6 +20,7 @@ def compare_characters(user_character, target_character, characters_df):
     comparison = {}
     for column in characters_df.columns[COMPARE_START_COL:]:
         is_numeric = True
+
         try:
             user_value = pd.to_numeric(user_character[column])
             target_value = pd.to_numeric(target_character[column])
@@ -34,8 +38,6 @@ def compare_characters(user_character, target_character, characters_df):
                 user_value = user_character[column]
                 target_value = target_character[column]
 
-        
-            
         if is_numeric:
             if user_value == target_value:
                 comparison[column] = (user_character[column],"[=]")
@@ -49,7 +51,6 @@ def compare_characters(user_character, target_character, characters_df):
             else:
                 comparison[column] = (user_character[column],"[!]")
             
-                
     return comparison
 
 
@@ -97,8 +98,18 @@ async def handle_answer(ctx, user_id, name, characters_df, autocomplete_names):
             msg += (f"\n[=] {column}: {target_character[column]}")
 
         turn_str = "turns" if turns > 1 else "turn"
-        msg += f"```\n\nCongratulations! You guessed **{target_character[NAME_COL]}** - **{target_character[ROMAJI_COL]}** in **{turns}** {turn_str}."
+        msg += f"```\nCongratulations! You guessed **{target_character[NAME_COL]}** - **{target_character[ROMAJI_COL]}** in **{turns}** {turn_str}."
         sessions.pop(user_id)
+
+        embed = discord.Embed(
+            title = target_character[ROMAJI_COL],
+            description = target_character[NAME_COL]
+        )
+        imageurl = target_character[IMAGE_COL]
+        embed.set_image(url = imageurl)
+        embed.set_author(name = target_character[TITLE_COL])
+
+        await ctx.respond(embed=embed, content=msg)
     else:
         # Trouver le personnage choisi par l'utilisateur dans le DataFrame
         user_character = characters_df[characters_df[ROMAJI_COL] == name].iloc[0]
@@ -109,5 +120,14 @@ async def handle_answer(ctx, user_id, name, characters_df, autocomplete_names):
         for key, value in comparison_result.items():
             if value[1] != user_character[key]:
                 msg += (f"\n{value[1]} {key}: {value[0]}")
+        msg += "\n----------\n"
+        
+        if turns < 10:
+            msg += f"Title reveal in {11 - turns} turns."
+        elif turns == 10:
+            msg += f"Title reveal on next turn."
+        else:
+            msg += f"Title: {target_character[TITLE_COL]}"
+
         msg += "```"
-    await ctx.respond(msg)
+        await ctx.respond(msg)
