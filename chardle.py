@@ -1,9 +1,11 @@
 import pandas as pd
 import random
-from utils import clean_string
+from utils import clean_string, convert_birthday
 
 NAME_COL = 'Name'
 ROMAJI_COL = 'Romaji'
+BIRTHDAY_COL = 'Birthday'
+RELEASE_COL = 'Release date'
 COMPARE_START_COL = 3
 SESSION_CHARINDEX = 0
 SESSION_TURNINDEX = 1
@@ -19,22 +21,35 @@ def compare_characters(user_character, target_character, characters_df):
             user_value = pd.to_numeric(user_character[column])
             target_value = pd.to_numeric(target_character[column])
         except ValueError:
-            is_numeric = False
-            user_value = user_character[column]
-            target_value = target_character[column]
+            if column == BIRTHDAY_COL:
+                is_numeric = True
+                user_value = convert_birthday(user_character[column])
+                target_value = convert_birthday(target_character[column])
+            elif column == RELEASE_COL:
+                is_numeric = True
+                user_value = user_character[column]
+                target_value = target_character[column]
+            else:
+                is_numeric = False
+                user_value = user_character[column]
+                target_value = target_character[column]
+
+        
             
         if is_numeric:
-            if user_character[column] == target_character[column]:
+            if user_value == target_value:
                 comparison[column] = (user_character[column],"[=]")
-            elif user_character[column] > target_character[column]:
+            elif user_value > target_value:
                 comparison[column] = (user_character[column],"[-]")
             else:
                 comparison[column] = (user_character[column],"[+]")
         else:
-            if user_character[column] == target_character[column]:
+            if user_value == target_value:
                 comparison[column] = (user_character[column],"[=]")
             else:
                 comparison[column] = (user_character[column],"[!]")
+            
+                
     return comparison
 
 
