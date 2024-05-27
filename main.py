@@ -12,6 +12,7 @@ from chardle import play_game, handle_answer
 
 TOKEN = getenv('TOKEN')
 LOGGING_CHANNEL_ID = getenv('LOGGING_CHANNEL_ID')
+OWNER_ID = getenv('OWNER_ID')
 
 update_data()
 
@@ -42,11 +43,14 @@ async def answer(ctx: discord.ApplicationContext, name: discord.Option(str, auto
 
 @util.command(description="Check my response time.") 
 async def ping(ctx: discord.ApplicationContext):
-    await ctx.respond(f"My Latency is {bot.latency}")
+    await ctx.respond(f"My Latency is {round(bot.latency * 1000)} ms.")
 
 @util.command(description="Owner only. Update my data.")
 async def refetch(ctx: discord.ApplicationContext):
-    update_data()
-    await ctx.respond("Updated from Google Sheets.", ephemeral=True)
+    if ctx.author.id == OWNER_ID:
+        update_data()
+        await ctx.respond("Updated from Google Sheets.", ephemeral=True)
+    else:
+        await ctx.respond("You are not allowed to execute this command.", ephemeral=True)
 
 bot.run(TOKEN)
