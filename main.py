@@ -47,10 +47,10 @@ async def ping(ctx: discord.ApplicationContext):
 
 @util.command(description="Owner only. Update my data.")
 async def refetch(ctx: discord.ApplicationContext):
-    if ctx.author.id == OWNER_ID:
+    if ctx.author.id == int(OWNER_ID):
         update_data()
         await ctx.respond("Updated from Google Sheets.", ephemeral=True)
     else:
-        await ctx.respond("You are not allowed to execute this command.", ephemeral=True)
+        await ctx.respond(f"You are not allowed to execute this command.", ephemeral=True)
 
 bot.run(TOKEN)

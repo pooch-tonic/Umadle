@@ -24,6 +24,7 @@ def update_data():
         data = sheet.get_all_values()
         df = pd.DataFrame(data[1:], columns=data[0])
         autocomplete_names = sorted(df['Romaji'].tolist())
+        print("Fetched the following entries:")
         print(autocomplete_names)
     except Exception as e:
         print(f"An error occurred: {e}")
