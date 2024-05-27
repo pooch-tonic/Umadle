@@ -43,7 +43,7 @@ async def answer(ctx: discord.ApplicationContext, name: discord.Option(str, auto
 
 @util.command(description="Check my response time.") 
 async def ping(ctx: discord.ApplicationContext):
-    await ctx.respond(f"My Latency is {round(bot.latency * 1000)} ms.")
+    await ctx.respond(f"My latency is {round(bot.latency * 1000)} ms.")
 
 @util.command(description="Owner only. Update my data.")
 async def refetch(ctx: discord.ApplicationContext):
